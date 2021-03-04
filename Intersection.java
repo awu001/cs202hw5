@@ -3,16 +3,8 @@ import java.io.*;
 
 public class Intersection {
 
-    public static boolean useSegment(TreeMap<double, double> tree, double x1, double y1, double x2, double y2){
-        // this is a horizontal segment, so we want to add it to the tree
-        if (y1 == y2){
-            tree.put(y1, x2);
-            return tree;
-        }
-        // this is a vertical segment, so we want to check it to see its intersection with horizontal segments
-        else if (x1 == x2){
-
-        }
+    public static void findIntersections(TreeSet<Event> queue, PrintWriter out){
+        
     }
 
     public static void main(String[] args) {
@@ -39,7 +31,9 @@ public class Intersection {
 
         /* loop to read input;
            you'll need to modify this to do something with the values read in */
-        TreeMap<
+
+        // we use a BST to store the queue of events to be gone through
+        TreeSet<Event> queue = new TreeSet<Event>();
         while (in.hasNextLine()) {
             double x1, y1, x2, y2;
             try {
@@ -51,11 +45,24 @@ public class Intersection {
                 break;
             }
             /* process/save segment's coordinates here */
-            useSegment(x1, y1, x2, y2);
-            removeOld()
+
+            // this segment is horizontal
+            // we add two events to the queue, one for the start and one for the end of the segment
+            if (y1 == y2){
+                Event start = new Event(0, x1, y1, y2);
+                queue.add(start);
+                Event end = new Event(1, x2, y1, y2);
+                queue.add(end);
+            }
+            // this segment is vertical
+            // we create only one new event in the queue, telling us to check for intersections
+            else if (x1 == x2){
+                Event vert = new Event(2, x2, y1, y2);
+                queue.add(vert);
+            }
 
             // example debugging print statement
-            System.err.printf("(%f, %f) to (%f, %f)\n", curr[0], curr[1], curr[2], curr[3]);
+            System.err.printf("(%f, %f) to (%f, %f)\n", x1, y1, x2, y2);
         }
 
         /* input complete; close Scanner's input file */
@@ -82,7 +89,7 @@ public class Intersection {
         }
 
         /* your output would go here */
-
+        findIntersections(queue, out);
 
 
         /* your output is finished here */
