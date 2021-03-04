@@ -1,12 +1,13 @@
 public class Event implements Comparable{
 
-    enum eventType = {START, END, VERT};
-    double xVal, yVal;
+    private enum eventType = {START, END, VERT};
+    private double xVal, yStart, yEnd;
 
-    public Event(int type, double x, double y){
+    public Event(int type, double x, double y1, double y2){
         this.eventType = eventType.values()[type];
         this.xVal = x;
-        this.yVal = y;
+        this.yStart = y1;
+        this.yEnd = y2;
     }
 
     public int compareTo(Event e){
