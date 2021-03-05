@@ -1,3 +1,5 @@
+import java.lang.Math;
+
 public class Event implements Comparable<Event>{
 
     double xVal, yStart, yEnd;
@@ -6,11 +8,12 @@ public class Event implements Comparable<Event>{
     Event(int type, double x, double y1, double y2){
         this.eventType = type;
         this.xVal = x;
-        this.yStart = y1;
-        this.yEnd = y2;
+        this.yStart = Math.min(y1, y2);
+        this.yEnd = Math.max(y1, y2);
     }
 
     public int compareTo(Event e){
+
         // this event occurs before event e
         if (this.xVal < e.xVal){
             return -1;
@@ -19,35 +22,42 @@ public class Event implements Comparable<Event>{
         else if (this.xVal > e.xVal){
             return 1;
         }
-        
+        // need some way to distinguish whether there is a line segment ending where another is starting
+        // if that number is in the tree already
         // this event and event e occur simultaneously
         else if (this.xVal == e.xVal){
             //order - remove, add, vertical
             // if this is a remove, it happens first
-            if (this.eventType == 2){
+            if (this.eventType == 1){
                 return -1;
             }
             // if e is a remove, it happens first
-            else if (e.eventType == 2){
-                return 1;
-            }
-            // now, we know neither is 1 so this event is 0 vs 2
-            else if (this.eventType == 1){
-                return -1;
-            }
-            // this event is 2 vs 0, and that should account for all cases
             else if (e.eventType == 1){
                 return 1;
             }
-            /* a few situations to deal with:
-                0 1 - this is add, e removes
-                0 2 - this is add, e is vertical - can there be a THIRD here that is also removing?
-                1 0 - this is remove, e adds
-                1 2 - this is remove, e is vertical - again, can there be a third in the same spot also adding?
-                2 0 - this is vertical, e is add
-                2 1 - this is vertical, e is remove
-            */
+            // now, we know neither is 1 so this event is 0 vs 2
+            else if (this.eventType == 0){
+                return -1;
+            }
+            // this event is 2 vs 0, and that should account for all cases
+            else if (e.eventType == 0){
+                return 1;
+            }
+
         }
         return 0;
+    }
+
+    public String toString(){
+        if (this.eventType == 0){
+            return ("S(" + this.xVal + ", " + this.yStart + ")\n");
+        }
+        else if (this.eventType == 1){
+            return ("E(" + this.xVal + ", " + this.yStart + ")\n");
+        }
+        else if (this.eventType == 2){
+            return ("V(" + this.xVal + ", " + this.yStart + ") to (" + this.xVal + ", " + this.yEnd + ")\n");
+        }
+        return " ";
     }
 }

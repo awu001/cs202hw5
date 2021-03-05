@@ -3,30 +3,91 @@ import java.io.*;
 
 public class Intersection {
 
+    public static void printIntersections(Event e, TreeSet<Double> yValues, PrintWriter out){
+        NavigableSet<Double> intersections;
+        if (e.yStart < e.yEnd){
+            intersections = yValues.subSet(e.yStart, true, e.yEnd, true);
+        }
+        else{
+            intersections = yValues.subSet(e.yEnd, true, e.yStart, true);
+        }
+        for (double currInt : intersections){
+            out.println(e.xVal + " " + currInt);
+        }
+        return;
+    }
+
     public static void findIntersections(TreeSet<Event> queue, PrintWriter out){
+        //System.out.println(queue.toString());
         // takes tree queue, makes new tree with y values
+        System.out.println(queue);
         TreeSet<Double> yValues = new TreeSet<Double>();
         for (Event curr: queue){
-            if (curr.eventType == 0){
+            Event next = queue.higher(curr);
+            System.out.println("Curr is " + curr);
+            System.out.println("Next is " + queue.higher(curr) + "\n");
+            //curr.toString();
+            // if the next event occurs at the same x value as the current event
+            if (curr.xVal == next.xVal){
+                //System.out.println("Two events at this x coordinate!");
+
+                Event nextNext = queue.higher(next);
+                // if the next two events occur at the same x value as current event
+                if (next.xVal == nextNext.xVal){
+                    NavigableSet<Double> intersections;
+                    //System.out.println("Three events at this x coordinate!");
+                    //System.out.println(curr.eventType + " " + next.eventType + " " + nextNext.eventType);
+                    //next.toString();
+                    //nextNext.toString();
+
+                    // we can ignore the add and remove since they effectively cancel, so all we need to do is find the vertical segment
+                    if (curr.eventType == 2){
+                        //System.out.println("found1!");
+                        printIntersections(curr, yValues, out);
+                    }
+                    else if (next.eventType == 2){
+                        //System.out.println("found2!");
+                        printIntersections(next, yValues, out);
+                    }
+                    else if (nextNext.eventType == 2){
+                        //System.out.println("found3!");
+                        printIntersections(nextNext, yValues, out);
+                    }
+                    //System.out.println("Skipping");
+                }
+                /*
+                //curr == next x val, but not nextNext
+                //3 options - AV, VR, AR
+                // AR
+                if (curr.eventType + next.eventType == 1{
+                    //remove first, then add
+                }
+                // AV
+                else if (curr.eventType + next.eventType == 2){
+                    // add, then vertical
+                }
+                // RV
+                else if (curr.eventType + next.eventType == 3){
+                    // vertical, then remove
+                }
+                */
+            }
+            // this event occurs by itself and is an add
+            else if (curr.eventType == 0){
+                System.out.println("Point added!");
                 yValues.add(curr.yStart);
             }
-
+            // is remove
             else if (curr.eventType == 1){
                 yValues.remove(curr.yStart);
+                System.out.println("Point removed!");
+            }
+            // is vertical
+            else if (curr.eventType == 2){
+                System.out.println("Intersections!");
+                printIntersections(curr, yValues, out);
             }
 
-            else if (curr.eventType == 2){
-                NavigableSet<Double> intersections;
-                if (curr.yStart < curr.yEnd){
-                    intersections = yValues.subSet(curr.yStart, true, curr.yEnd, true);
-                }
-                else{
-                    intersections = yValues.subSet(curr.yEnd, true, curr.yStart, true);
-                }
-                for (double currInt : intersections){
-                    out.println(curr.xVal + " " + currInt);
-                }
-            }
         }
         return;
     }
@@ -73,10 +134,18 @@ public class Intersection {
             // this segment is horizontal
             // we add two events to the queue, one for the start and one for the end of the segment
             if (y1 == y2){
-                Event start = new Event(0, x1, y1, y2);
-                queue.add(start);
-                Event end = new Event(1, x2, y1, y2);
-                queue.add(end);
+                if (x1 < x2){
+                    Event start = new Event(0, x1, y1, y2);
+                    queue.add(start);
+                    Event end = new Event(1, x2, y1, y2);
+                    queue.add(end);
+                }
+                else if (x1 > x2){
+                    Event start = new Event(0, x2, y1, y2);
+                    queue.add(start);
+                    Event end = new Event(1, x1, y1, y2);
+                    queue.add(end);
+                }
             }
             // this segment is vertical
             // we create only one new event in the queue, telling us to check for intersections
