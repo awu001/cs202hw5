@@ -1,10 +1,10 @@
-public class Event implements Comparable{
+public class Event implements Comparable<Event>{
 
-    private enum eventType = {START, END, VERT};
-    private double xVal, yStart, yEnd;
+    double xVal, yStart, yEnd;
+    int eventType;
 
-    public Event(int type, double x, double y1, double y2){
-        this.eventType = eventType.values()[type];
+    Event(int type, double x, double y1, double y2){
+        this.eventType = type;
         this.xVal = x;
         this.yStart = y1;
         this.yEnd = y2;
@@ -21,7 +21,19 @@ public class Event implements Comparable{
         }
         // this event and event e occur simultaneously
         else if (this.xVal == e.xVal){
-            return 0;
+            // if this event is a vertical line and they have the same x, deal with it first
+            if (this.eventType == 2){
+                return -1;
+            }
+            // if the other event is a vertical line, deal with it first
+            if (e.eventType == 2){
+                return 1;
+            }
+            // if the event is an endpoint, the other 
+            else if (this.eventType == 1 && e.eventType == 0){
+                
+            }
         }
+        return 0;
     }
 }

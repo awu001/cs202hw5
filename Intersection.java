@@ -4,7 +4,31 @@ import java.io.*;
 public class Intersection {
 
     public static void findIntersections(TreeSet<Event> queue, PrintWriter out){
-        
+        // takes tree queue, makes new tree with y values
+        TreeSet<Double> yValues = new TreeSet<Double>();
+        for (Event curr: queue){
+            if (curr.eventType == 0){
+                yValues.add(curr.yStart);
+            }
+
+            else if (curr.eventType == 1){
+                yValues.remove(curr.yStart);
+            }
+
+            else if (curr.eventType == 2){
+                NavigableSet<Double> intersections;
+                if (curr.yStart < curr.yEnd){
+                    intersections = yValues.subSet(curr.yStart, true, curr.yEnd, true);
+                }
+                else{
+                    intersections = yValues.subSet(curr.yEnd, true, curr.yStart, true);
+                }
+                for (double currInt : intersections){
+                    out.println(curr.xVal + " " + currInt);
+                }
+            }
+        }
+        return;
     }
 
     public static void main(String[] args) {
