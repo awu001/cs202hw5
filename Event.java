@@ -26,7 +26,7 @@ public class Event implements Comparable<Event>{
         // if that number is in the tree already
         // this event and event e occur simultaneously
         else if (this.xVal == e.xVal){
-            //order - remove, add, vertical
+            // order - remove, add, vertical
             // if this is a remove, it happens first
             if (this.eventType == 1){
                 return -1;
@@ -43,20 +43,28 @@ public class Event implements Comparable<Event>{
             else if (e.eventType == 0){
                 return 1;
             }
-
+            else if (this.eventType == 2 && e.eventType == 2){
+                if (this.yStart >= e.yEnd){
+                    return 1;
+                }
+                else if (e.yEnd >= this.yStart){
+                    return -1;
+                }
+                return -1;
+            }
         }
         return 0;
     }
 
     public String toString(){
         if (this.eventType == 0){
-            return ("S(" + this.xVal + ", " + this.yStart + ")\n");
+            return ("S(" + this.xVal + ", " + this.yStart + ")");
         }
         else if (this.eventType == 1){
-            return ("E(" + this.xVal + ", " + this.yStart + ")\n");
+            return ("E(" + this.xVal + ", " + this.yStart + ")");
         }
         else if (this.eventType == 2){
-            return ("V(" + this.xVal + ", " + this.yStart + ") to (" + this.xVal + ", " + this.yEnd + ")\n");
+            return ("V(" + this.xVal + ", " + this.yStart + ") to (" + this.xVal + ", " + this.yEnd + ")");
         }
         return " ";
     }
