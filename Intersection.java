@@ -10,18 +10,18 @@ public class Intersection {
         Event curr;
         while (!queue.isEmpty()){
             curr = queue.pollFirst();
-            if (!queue.isEmpty() && curr.xVal == queue.first().xVal){
+            if (!queue.isEmpty() && curr.getXVal() == queue.first().getXVal()){
                 doubleX(queue, yValues, curr, out);
             }
-            else if (curr.eventType == 0){
-                yValues.add(curr.yStart);
+            else if (curr.getEventType() == 0){
+                yValues.add(curr.getYStart());
             }
 
-            else if (curr.eventType == 1){
-                yValues.remove(curr.yStart);
+            else if (curr.getEventType() == 1){
+                yValues.remove(curr.getYStart());
             }
 
-            else if (curr.eventType == 2){
+            else if (curr.getEventType() == 2){
                 NavigableSet<Double> intersections;
                 printIntersections(curr, yValues, out);
             }
@@ -30,54 +30,54 @@ public class Intersection {
     
     // helper for when a vertical line is found to print out any intersections
     public static void printIntersections(Event e, TreeSet<Double> yValues, PrintWriter out){
-        NavigableSet<Double> intersections = yValues.subSet(e.yStart, true, e.yEnd, true);
+        NavigableSet<Double> intersections = yValues.subSet(e.getYStart(), true, e.getYEnd(), true);
         for (double currInt : intersections){
-            out.println(e.xVal + " " + currInt);
+            out.println(e.getXVal() + " " + currInt);
         }
     }
 
     // helper function for if the current and next events occur at the same x Value
     public static void doubleX(TreeSet<Event> queue, TreeSet<Double> yValues, Event curr, PrintWriter out){
         Event next = queue.pollFirst();
-        if (!queue.isEmpty() && next.xVal == queue.first().xVal){
+        if (!queue.isEmpty() && next.getXVal() == queue.first().getXVal()){
             tripleX(queue, yValues, curr, next, out);
         }
         else{
-            if (curr.eventType == 0){
-                if (next.eventType == 0){
-                    yValues.add(curr.yStart);
-                    yValues.add(next.yStart);
+            if (curr.getEventType() == 0){
+                if (next.getEventType() == 0){
+                    yValues.add(curr.getYStart());
+                    yValues.add(next.getYStart());
                 }
-                else if (next.eventType == 2){
-                    yValues.add(curr.yStart);
+                else if (next.getEventType() == 2){
+                    yValues.add(curr.getYStart());
                     printIntersections(next, yValues, out);
                 }
             }
-            else if (curr.eventType == 1){
-                if (next.eventType == 0){
-                    yValues.remove(curr.yStart);
-                    yValues.add(next.yStart);
+            else if (curr.getEventType() == 1){
+                if (next.getEventType() == 0){
+                    yValues.remove(curr.getYStart());
+                    yValues.add(next.getYStart());
                     // horizontal line connection
-                    if (curr.yStart == next.yStart){
-                        out.println(curr.xVal + " " + curr.yStart);
+                    if (curr.getYStart() == next.getYStart()){
+                        out.println(curr.getXVal() + " " + curr.getYStart());
                     }
                 }
-                else if (next.eventType == 1){
-                    yValues.remove(curr.yStart);
-                    yValues.remove(next.yStart);
+                else if (next.getEventType() == 1){
+                    yValues.remove(curr.getYStart());
+                    yValues.remove(next.getYStart());
                 }
-                else if (next.eventType == 2){
+                else if (next.getEventType() == 2){
                     printIntersections(next, yValues, out);
-                    yValues.remove(curr.yStart);
+                    yValues.remove(curr.getYStart());
                 }
             }
-            else if (curr.eventType == 2){
-                if (next.eventType == 2){
-                    yValues.add(curr.yStart);
-                    yValues.add(curr.yEnd);
+            else if (curr.getEventType() == 2){
+                if (next.getEventType() == 2){
+                    yValues.add(curr.getYStart());
+                    yValues.add(curr.getYEnd());
                     printIntersections(next, yValues, out);
-                    yValues.remove(curr.yStart);
-                    yValues.remove(curr.yEnd);
+                    yValues.remove(curr.getYStart());
+                    yValues.remove(curr.getYEnd());
                 }
             }
         }
@@ -88,18 +88,18 @@ public class Intersection {
         // we know the order is by default remove, add, vertical, if remove and add are at different y gotta add, vert, remove
         Event nextNext = queue.pollFirst();
         // if all 3 are vertical lines
-        if (curr.eventType == 2 && next.eventType == 2 && nextNext.eventType == 2){
-            yValues.add(curr.yEnd);
-            yValues.add(nextNext.yStart);
+        if (curr.getEventType() == 2 && next.getEventType() == 2 && nextNext.getEventType() == 2){
+            yValues.add(curr.getYEnd());
+            yValues.add(nextNext.getYStart());
             printIntersections(next, yValues, out);
-            yValues.remove(curr.yEnd);
-            yValues.remove(nextNext.yStart);
+            yValues.remove(curr.getYEnd());
+            yValues.remove(nextNext.getYStart());
         }
         // if remove and add occur at different y values, switch the order to add, then vertical, then remove
-        if (curr.yEnd != next.yStart){
-            yValues.add(next.yStart);
+        if (curr.getYEnd() != next.getYStart()){
+            yValues.add(next.getYStart());
             printIntersections(nextNext, yValues, out);
-            yValues.remove(curr.yEnd);
+            yValues.remove(curr.getYEnd());
         }   
     }
 

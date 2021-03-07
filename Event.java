@@ -2,14 +2,30 @@ import java.lang.Math;
 
 public class Event implements Comparable<Event>{
 
-    double xVal, yStart, yEnd;
-    int eventType;
+    private double xVal, yStart, yEnd;
+    private int eventType;
 
     Event(int type, double x, double y1, double y2){
         this.eventType = type;
         this.xVal = x;
         this.yStart = Math.min(y1, y2);
         this.yEnd = Math.max(y1, y2);
+    }
+
+    public double getXVal(){
+        return this.xVal;
+    }
+    
+    public double getYStart(){
+        return this.yStart;
+    }
+
+    public double getYEnd(){
+        return this.yEnd;
+    }
+
+    public int getEventType(){
+        return this.eventType;
     }
 
     public int compareTo(Event e){
@@ -43,10 +59,13 @@ public class Event implements Comparable<Event>{
             else if (e.eventType == 0){
                 return 1;
             }
+            // two vertical lines
             else if (this.eventType == 2 && e.eventType == 2){
+                // if this starts higher, it happens after
                 if (this.yStart >= e.yEnd){
                     return 1;
                 }
+                // if this starts lower, it happens
                 else if (e.yEnd >= this.yStart){
                     return -1;
                 }
