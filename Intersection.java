@@ -3,89 +3,15 @@ import java.io.*;
 
 public class Intersection {
 
-    public static void printIntersections(Event e, TreeSet<Double> yValues, PrintWriter out){
-        NavigableSet<Double> intersections = yValues.subSet(e.yStart, true, e.yEnd, true);
-        for (double currInt : intersections){
-            out.println(e.xVal + " " + currInt);
-        }
-        return;
-    }
-    // in case of triple vertical lines
-    
-    
-
+    // finds all intersections, provided a BST queue of start/end points and vertical lines
     public static void findIntersections(TreeSet<Event> queue, PrintWriter out){
         // takes tree queue, makes new tree with y values
         TreeSet<Double> yValues = new TreeSet<Double>();
         Event curr;
-        System.out.println(queue + " is the queue");
         while (!queue.isEmpty()){
             curr = queue.pollFirst();
             if (!queue.isEmpty() && curr.xVal == queue.first().xVal){
-                Event next = queue.pollFirst();
-                if (!queue.isEmpty() && next.xVal == queue.first().xVal){
-                    // we know the order is by default remove, add, vertical, if remove and add are at different y gotta add, vert, remove
-                    Event nextNext = queue.pollFirst();
-                    if (curr.eventType == 2 && next.eventType == 2 && nextNext.eventType == 2){
-                        yValues.add(curr.yEnd);
-                        yValues.add(nextNext.yStart);
-                        printIntersections(next, yValues, out);
-                    }
-                    if (curr.yEnd != next.yStart){
-                        yValues.add(next.yStart);
-                        printIntersections(nextNext, yValues, out);
-                        yValues.remove(next.yStart);
-                    }   
-                }
-                // just a group of 2
-                else{
-                    System.out.println("Curr is: " + curr.eventType);
-                    System.out.println("Next is: " + next.eventType);
-                    if (curr.eventType == 0){
-                        if (next.eventType == 0){
-                            // needs more cases
-                            yValues.add(curr.yStart);
-                            yValues.add(next.yStart);
-                        }
-                        /*else if (next.eventType == 1){
-                            yValues.remove(next.yStart);
-                            yValues.add(curr.yStart);
-                        }*/
-                        else if (next.eventType == 2){
-                            yValues.add(curr.yStart);
-                            printIntersections(next, yValues, out);
-                        }
-                    }
-                    else if (curr.eventType == 1){
-                        if (next.eventType == 0){
-                            yValues.remove(curr.yStart);
-                            yValues.add(next.yStart);
-                            // horizontal line connection
-                            if (curr.yStart == next.yStart){
-                                out.println(curr.xVal + " " + curr.yStart);
-                            }
-                        }
-                        else if (next.eventType == 1){
-                            yValues.remove(curr.yStart);
-                            yValues.remove(next.yStart);
-                        }
-                        else if (next.eventType == 2){
-                            System.out.println("I am in here");
-                            printIntersections(next, yValues, out);
-                            yValues.remove(curr.yStart);
-                        }
-                    }
-                    else if (curr.eventType == 2){
-                        if (next.eventType == 2){
-                            yValues.add(curr.yStart);
-                            yValues.add(curr.yEnd);
-                            printIntersections(next, yValues, out);
-                            yValues.remove(curr.yStart);
-                            yValues.remove(curr.yEnd);
-                        }
-                    }
-                    // Two Horiz, Two Vert, end+vert, MAYBE START+VERT
-                }
+                doubleX(queue, yValues, curr, out);
             }
             else if (curr.eventType == 0){
                 yValues.add(curr.yStart);
@@ -100,6 +26,81 @@ public class Intersection {
                 printIntersections(curr, yValues, out);
             }
         }
+    }
+    
+    // helper for when a vertical line is found to print out any intersections
+    public static void printIntersections(Event e, TreeSet<Double> yValues, PrintWriter out){
+        NavigableSet<Double> intersections = yValues.subSet(e.yStart, true, e.yEnd, true);
+        for (double currInt : intersections){
+            out.println(e.xVal + " " + currInt);
+        }
+    }
+
+    // helper function for if the current and next events occur at the same x Value
+    public static void doubleX(TreeSet<Event> queue, TreeSet<Double> yValues, Event curr, PrintWriter out){
+        Event next = queue.pollFirst();
+        if (!queue.isEmpty() && next.xVal == queue.first().xVal){
+            tripleX(queue, yValues, curr, next, out);
+        }
+        else{
+            if (curr.eventType == 0){
+                if (next.eventType == 0){
+                    yValues.add(curr.yStart);
+                    yValues.add(next.yStart);
+                }
+                else if (next.eventType == 2){
+                    yValues.add(curr.yStart);
+                    printIntersections(next, yValues, out);
+                }
+            }
+            else if (curr.eventType == 1){
+                if (next.eventType == 0){
+                    yValues.remove(curr.yStart);
+                    yValues.add(next.yStart);
+                    // horizontal line connection
+                    if (curr.yStart == next.yStart){
+                        out.println(curr.xVal + " " + curr.yStart);
+                    }
+                }
+                else if (next.eventType == 1){
+                    yValues.remove(curr.yStart);
+                    yValues.remove(next.yStart);
+                }
+                else if (next.eventType == 2){
+                    printIntersections(next, yValues, out);
+                    yValues.remove(curr.yStart);
+                }
+            }
+            else if (curr.eventType == 2){
+                if (next.eventType == 2){
+                    yValues.add(curr.yStart);
+                    yValues.add(curr.yEnd);
+                    printIntersections(next, yValues, out);
+                    yValues.remove(curr.yStart);
+                    yValues.remove(curr.yEnd);
+                }
+            }
+        }
+    }
+
+    // helper for if curr, next, and nextNext are all occurring at the same x value
+    public static void tripleX(TreeSet<Event> queue, TreeSet<Double> yValues, Event curr, Event next, PrintWriter out){
+        // we know the order is by default remove, add, vertical, if remove and add are at different y gotta add, vert, remove
+        Event nextNext = queue.pollFirst();
+        // if all 3 are vertical lines
+        if (curr.eventType == 2 && next.eventType == 2 && nextNext.eventType == 2){
+            yValues.add(curr.yEnd);
+            yValues.add(nextNext.yStart);
+            printIntersections(next, yValues, out);
+            yValues.remove(curr.yEnd);
+            yValues.remove(nextNext.yStart);
+        }
+        // if remove and add occur at different y values, switch the order to add, then vertical, then remove
+        if (curr.yEnd != next.yStart){
+            yValues.add(next.yStart);
+            printIntersections(nextNext, yValues, out);
+            yValues.remove(curr.yEnd);
+        }   
     }
 
     public static void main(String[] args) {
@@ -123,10 +124,7 @@ public class Intersection {
             }
         }
 
-        /* loop to read input;
-           you'll need to modify this to do something with the values read in */
-
-        // we use a BST to store the queue of events to be gone through
+        //loop to read input; we use a BST to store the queue of events to be gone through
         TreeSet<Event> queue = new TreeSet<Event>();
         while (in.hasNextLine()) {
             double x1, y1, x2, y2;
@@ -162,9 +160,6 @@ public class Intersection {
                 Event vert = new Event(2, x2, y1, y2);
                 queue.add(vert);
             }
-
-            // example debugging print statement
-            System.err.printf("(%f, %f) to (%f, %f)\n", x1, y1, x2, y2);
         }
 
         /* input complete; close Scanner's input file */
@@ -192,9 +187,8 @@ public class Intersection {
 
         /* your output would go here */
         findIntersections(queue, out);
-
-
         /* your output is finished here */
+        
         out.flush();
         if (!stdout)
             out.close();
